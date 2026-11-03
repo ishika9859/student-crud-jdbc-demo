@@ -26,13 +26,13 @@ The project is deliberately small so that each JDBC concept stays visible: openi
 
 ## Tech Stack
 
-| Area        | Choice                                   |
-|-------------|------------------------------------------|
-| Language    | Java (compiler level set to 25 in `pom.xml`) |
-| Build tool  | Maven                                    |
-| Database    | PostgreSQL                               |
-| Driver      | `org.postgresql:postgresql` 42.7.13      |
-| Testing     | JUnit 4.11 (default placeholder test)    |
+| Area       | Choice                                       |
+| ---------- | -------------------------------------------- |
+| Language   | Java (compiler level set to 25 in `pom.xml`) |
+| Build tool | Maven                                        |
+| Database   | PostgreSQL                                   |
+| Driver     | `org.postgresql:postgresql` 42.7.13          |
+| Testing    | JUnit 4.11 (default placeholder test)        |
 
 ---
 
@@ -40,14 +40,14 @@ The project is deliberately small so that each JDBC concept stays visible: openi
 
 The following need to be available for the project to build and run:
 
-| Requirement | Details |
-|-------------|---------|
-| **JDK** | A version matching the compiler level in `pom.xml` (currently 25). The `maven.compiler.source` and `maven.compiler.target` values can be lowered to match an older JDK. |
-| **Apache Maven** | Used to compile the project and download the PostgreSQL driver. |
-| **PostgreSQL** | A running local server on the default port `5432`. |
-| **Database and table** | A database named `student_db` containing the `student` table described in the [Database](#database) section. |
-| **Environment variable** | `DB_PASSWORD` set to the PostgreSQL password (see [Configuration](#configuration)). |
-| **IDE (optional)** | VS Code, IntelliJ or Eclipse for running `mainApp`. |
+| Requirement              | Details                                                                                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **JDK**                  | A version matching the compiler level in `pom.xml` (currently 25). The `maven.compiler.source` and `maven.compiler.target` values can be lowered to match an older JDK. |
+| **Apache Maven**         | Used to compile the project and download the PostgreSQL driver.                                                                                                         |
+| **PostgreSQL**           | A running local server on the default port `5432`.                                                                                                                      |
+| **Database and table**   | A database named `student_db` containing the `student` table described in the [Database](#database) section.                                                            |
+| **Environment variable** | `DB_PASSWORD` set to the PostgreSQL password (see [Configuration](#configuration)).                                                                                     |
+| **IDE (optional)**       | VS Code, IntelliJ or Eclipse for running `mainApp`.                                                                                                                     |
 
 ---
 
@@ -55,11 +55,11 @@ The following need to be available for the project to build and run:
 
 Database credentials are not stored in the source code. The password is read from an **environment variable** at runtime, so no secret is committed to the repository.
 
-| Setting  | Source |
-|----------|--------|
+| Setting  | Source                                                                 |
+| -------- | ---------------------------------------------------------------------- |
 | URL      | `jdbc:postgresql://localhost:5432/student_db` (in `connectionDB.java`) |
-| Username | `postgres` (in `connectionDB.java`) |
-| Password | Environment variable `DB_PASSWORD` |
+| Username | `postgres` (in `connectionDB.java`)                                    |
+| Password | Environment variable `DB_PASSWORD`                                     |
 
 Reading the password this way keeps the code safe to publish on GitHub and lets each machine use its own credentials.
 
@@ -94,12 +94,12 @@ mainApp  ──►  studentDAO  ──►  connectionDB  ──►  PostgreSQL (
           studentPOJO (data passed between layers)
 ```
 
-| Class | Role |
-|-------|------|
-| `mainApp` | Entry point. Creates a student object and calls the DAO methods in sequence. |
-| `studentPOJO` | A plain Java object that holds one student's data (id, name, email, marks, gender) with a constructor and getters. It has no database logic. |
-| `studentDAO` | The Data Access Object. All SQL lives here, one method per operation. |
-| `connectionDB` | A small utility that returns a `Connection` using the URL, username and password. |
+| Class          | Role                                                                                                                                         |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mainApp`      | Entry point. Creates a student object and calls the DAO methods in sequence.                                                                 |
+| `studentPOJO`  | A plain Java object that holds one student's data (id, name, email, marks, gender) with a constructor and getters. It has no database logic. |
+| `studentDAO`   | The Data Access Object. All SQL lives here, one method per operation.                                                                        |
+| `connectionDB` | A small utility that returns a `Connection` using the URL, username and password.                                                            |
 
 Keeping SQL inside the DAO means the rest of the program never needs to know how the data is stored.
 
@@ -109,13 +109,13 @@ Keeping SQL inside the DAO means the rest of the program never needs to know how
 
 The program works against a PostgreSQL database named `student_db` containing a single `student` table:
 
-| Column   | Type (intended)        | Notes                          |
-|----------|------------------------|--------------------------------|
-| `id`     | `SERIAL`, primary key  | Auto-generated by the database |
-| `name`   | `VARCHAR`              | Student name                   |
-| `email`  | `VARCHAR`              | Student email                  |
-| `marks`  | `INT`                  | Marks scored                   |
-| `gender` | `VARCHAR`              | Gender                         |
+| Column   | Type (intended)       | Notes                          |
+| -------- | --------------------- | ------------------------------ |
+| `id`     | `SERIAL`, primary key | Auto-generated by the database |
+| `name`   | `VARCHAR`             | Student name                   |
+| `email`  | `VARCHAR`             | Student email                  |
+| `marks`  | `INT`                 | Marks scored                   |
+| `gender` | `VARCHAR`             | Gender                         |
 
 Because `id` is generated by the database, the Java code never supplies it when inserting a student.
 
@@ -126,18 +126,23 @@ The connection uses the standard local PostgreSQL address (`localhost:5432`) wit
 ## How Each Operation Works
 
 ### Create – `addStudent(studentPOJO s)`
-Takes a `studentPOJO`, builds an `INSERT INTO student (name, email, marks, gender) ...` statement from its getters, and runs it with `executeUpdate()`. If at least one row is affected, it prints *"Student added successfully"*.
+
+Takes a `studentPOJO`, builds an `INSERT INTO student (name, email, marks, gender) ...` statement from its getters, and runs it with `executeUpdate()`. If at least one row is affected, it prints _"Student added successfully"_.
 
 ### Read – `getAllStudnets()`
+
 Runs `SELECT * FROM student` with `executeQuery()`. The returned `ResultSet` is walked with `rs.next()`, and each row's columns are read with `getInt` / `getString` and printed in a formatted block.
 
 ### Update – `updateStudentMark(int newMark, int id)`
+
 Runs `UPDATE student SET marks = ... WHERE id = ...`. The `WHERE` clause restricts the change to one student. A confirmation message prints when a row was updated.
 
 ### Delete – `deleteStudent(int id)`
+
 Runs `DELETE FROM student WHERE id = ...` and confirms when a row was removed. In the demo, this call is commented out in `mainApp` to protect existing data.
 
 ### Connection handling – `connectionDB.getConnection()`
+
 Calls `DriverManager.getConnection(url, username, password)`, where the password is read from the `DB_PASSWORD` environment variable. Each DAO method opens its connection inside a **try-with-resources** block, so the connection is closed automatically even when an exception occurs.
 
 ---
@@ -158,11 +163,9 @@ dao.getAllStudnets();          // Read
 
 ### Output
 
+![Program output](student-crud-jdbc-demo/screenshots/output.png)
 
-
-![Program output](screenshots/output.png)
-
-*Console output of `mainApp` showing the add, update and read operations.*
+_Console output of `mainApp` showing the add, update and read operations._
 
 ---
 
