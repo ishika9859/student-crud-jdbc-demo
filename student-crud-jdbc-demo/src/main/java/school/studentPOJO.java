@@ -1,3 +1,4 @@
+package school;
 public class studentPOJO {
     private int id;
     private String name;
@@ -7,17 +8,13 @@ public class studentPOJO {
 
     public studentPOJO(){};
 
-    public studentPOJO(int id , String name ,String email , int marks , String gender){
-      this.id = id;
+    public studentPOJO(String name ,String email , int marks , String gender){
       this.name = name ;
       this.email=email;
       this.marks=marks;
       this.gender=gender;
     }
 
-    public int getId(){
-      return id;
-    }
     public String getName(){
       return name;
     }
